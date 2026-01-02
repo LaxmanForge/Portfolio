@@ -4,7 +4,6 @@ import {
   useGLTF,
   useTexture,
   PerspectiveCamera,
-  Html,
   ContactShadows,
   OrbitControls,
 } from "@react-three/drei";
@@ -34,8 +33,8 @@ function HDEnabler() {
   return null;
 }
 
-/* --- CYBER PC (TITAN EDITION) --- */
-function CyberPC({ scale = 1, isClicked, ...props }) {
+/* --- CYBER PC (TITAN EDITION - NO HTML) --- */
+function CyberPC({ scale = 1, ...props }) {
   return (
     <group {...props} scale={scale}>
       {/* 1. MONITOR FRAME */}
@@ -44,101 +43,13 @@ function CyberPC({ scale = 1, isClicked, ...props }) {
         <meshStandardMaterial color="#050505" roughness={0.7} metalness={0.8} />
       </mesh>
 
-      {/* 2. SCREEN SURFACE */}
+      {/* 2. SCREEN SURFACE (Blank Black Glass) */}
       <mesh position={[0, 1.1, 0.051]}>
         <planeGeometry args={[3.1, 1.4]} />
         <meshStandardMaterial color="#000000" roughness={0.2} metalness={0.8} />
       </mesh>
 
-      {/* 3. HTML CONTENT */}
-      {isClicked && (
-        <Html
-          transform
-          wrapperClass="htmlScreen"
-          distanceFactor={2.4}
-          position={[0, 1.1, 0.052]}
-          rotation={[0, 0, 0]}
-        >
-          <div
-            style={{
-              background: "#000",
-              color: "#00ff44",
-              fontFamily: "monospace",
-              width: "1280px",
-              height: "580px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "4px solid #111",
-              boxSizing: "border-box",
-              padding: "20px",
-            }}
-          >
-            <h1
-              style={{
-                fontSize: "80px",
-                margin: "0",
-                textShadow: "0 0 15px #00ff44",
-                letterSpacing: "5px",
-              }}
-            >
-              SYSTEM LOCKED
-            </h1>
-            <p
-              style={{
-                fontSize: "24px",
-                color: "#666",
-                marginTop: "10px",
-                letterSpacing: "2px",
-              }}
-            >
-              SECURE TERMINAL // AUTH REQUIRED
-            </p>
-            <div
-              style={{
-                width: "100%",
-                height: "2px",
-                background: "#333",
-                margin: "40px 0",
-              }}
-            />
-
-            <input
-              type="text"
-              placeholder="ENTER PASSWORD"
-              autoFocus
-              style={{
-                fontSize: "40px",
-                padding: "20px",
-                width: "60%",
-                background: "#050505",
-                border: "2px solid #00ff44",
-                color: "#fff",
-                textAlign: "center",
-                outline: "none",
-                letterSpacing: "3px",
-              }}
-              onChange={(e) => {
-                if (e.target.value.toLowerCase() === "claude shannon")
-                  alert("ACCESS GRANTED");
-              }}
-            />
-            <p
-              style={{
-                fontSize: "20px",
-                color: "#444",
-                marginTop: "60px",
-                cursor: "pointer",
-              }}
-            >
-              (Click outside monitor to exit)
-            </p>
-          </div>
-        </Html>
-      )}
-
-      {/* 4. MONITOR STAND */}
+      {/* 3. MONITOR STAND */}
       <mesh position={[0, 0.25, -0.1]}>
         <cylinderGeometry args={[0.08, 0.15, 0.6, 32]} />
         <meshStandardMaterial color="#222" roughness={0.5} metalness={1} />
@@ -148,7 +59,7 @@ function CyberPC({ scale = 1, isClicked, ...props }) {
         <meshStandardMaterial color="#111" roughness={0.5} />
       </mesh>
 
-      {/* 5. CPU TOWER */}
+      {/* 4. CPU TOWER */}
       <group position={[2.3, 0.6, 0.2]}>
         <mesh>
           <boxGeometry args={[0.55, 1.3, 1.3]} />
@@ -277,10 +188,8 @@ function OfficeScene({ isClicked, setClicked }) {
 
   useFrame((state) => {
     if (isClicked) {
-      // ZOOM FIX:
-      // Target Y: 1.1 (Center of screen)
-      // Target Z: 4.5 (Pulled back to fit the HUGE monitor width)
-      state.camera.position.lerp(new THREE.Vector3(0, 1.1, 4.5), 0.04);
+      // ZOOM: Target Y: 1.1 (Center), Z: 1.6 (Full view)
+      state.camera.position.lerp(new THREE.Vector3(0, 1.1, 1.6), 0.04);
       state.camera.lookAt(0, 1.1, 0);
     }
   });
@@ -335,11 +244,7 @@ function OfficeScene({ isClicked, setClicked }) {
           setClicked(!isClicked);
         }}
       >
-        <CyberPC
-          position={[0, 0.05, -0.2]}
-          scale={0.75}
-          isClicked={isClicked}
-        />
+        <CyberPC position={[0, 0.05, -0.2]} scale={0.75} />
       </group>
 
       {/* LAMP */}
