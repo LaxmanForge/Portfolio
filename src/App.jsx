@@ -4,6 +4,7 @@ import {
   useGLTF,
   useTexture,
   PerspectiveCamera,
+  Html,
   ContactShadows,
   OrbitControls,
 } from "@react-three/drei";
@@ -25,7 +26,199 @@ function HDEnabler() {
   return null;
 }
 
-/* --- CYBER PC (STATIC PROP) --- */
+/* =========================================
+   2. HIGH-RES COMPONENTS
+   ========================================= */
+
+/* --- PROFESSIONAL SVG LOGO (Clean, No Glow) --- */
+const LALogo = () => (
+  <svg
+    width="320px"
+    height="320px"
+    viewBox="0 0 100 100"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    // Removed drop-shadow filter for a clean look
+  >
+    <path d="M35 30V70H70V60H45V30H35Z" fill="white" />
+    <path d="M55 70L75 30H65L55 50L45 30H35L55 70Z" fill="white" />
+    <circle cx="15" cy="15" r="2" fill="white" />
+    <circle cx="85" cy="15" r="2" fill="white" />
+    <circle cx="15" cy="85" r="2" fill="white" />
+    <circle cx="85" cy="85" r="2" fill="white" />
+  </svg>
+);
+
+/* --- BOOT SCREEN (Clean, Consistent, No Glow) --- */
+function BootScreen() {
+  const [phase, setPhase] = useState("logo");
+  const [progress, setProgress] = useState(0);
+
+  // 1. Logo Timer
+  useEffect(() => {
+    if (phase === "logo") {
+      const timer = setTimeout(() => setPhase("loading"), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [phase]);
+
+  // 2. High-Grade Progress Bar Logic
+  useEffect(() => {
+    if (phase === "loading") {
+      const interval = setInterval(() => {
+        setProgress((old) => {
+          const increment = Math.random() * 4 + 1;
+          const next = old + increment;
+
+          if (next >= 100) {
+            clearInterval(interval);
+            setPhase("identify");
+            return 100;
+          }
+          return next;
+        });
+      }, 50);
+
+      return () => clearInterval(interval);
+    }
+  }, [phase]);
+
+  // 3. Identification
+  useEffect(() => {
+    if (phase === "identify") {
+      const timer = setTimeout(() => setPhase("access"), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [phase]);
+
+  return (
+    // OUTER WRAPPER
+    <div
+      style={{
+        width: "280px",
+        height: "130px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        overflow: "visible",
+      }}
+    >
+      {/* INNER CONTENT (High Res) */}
+      <div
+        style={{
+          width: "1120px", // 4x Width
+          height: "520px", // 4x Height
+          transform: "scale(0.25)",
+          transformOrigin: "center center",
+
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          fontFamily: "'Space Mono', monospace",
+          color: "white",
+          textAlign: "center",
+          background: "transparent",
+        }}
+      >
+        {/* PHASE 1: LOGO */}
+        {phase === "logo" && (
+          <div style={{ animation: "fadeIn 0.8s ease-in-out" }}>
+            <LALogo />
+          </div>
+        )}
+
+        {/* PHASE 2: PROGRESS BAR (CLEAN WHITE) */}
+        {phase === "loading" && (
+          <div
+            style={{
+              width: "80%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {/* Percentage Text */}
+            <div
+              style={{
+                fontSize: "40px",
+                marginBottom: "20px",
+                color: "white",
+                // Removed textShadow glow
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>LOADING MODULES</span>
+              <span>{Math.floor(progress)}%</span>
+            </div>
+
+            {/* The Bar Container */}
+            <div
+              style={{
+                width: "100%",
+                height: "20px",
+                background: "#111",
+                border: "2px solid #333", // Cleaner border color
+                borderRadius: "4px",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              {/* The Fill (CLEAN WHITE, NO GLOW) */}
+              <div
+                style={{
+                  width: `${progress}%`,
+                  height: "100%",
+                  background: "white",
+                  // Removed boxShadow glow
+                  transition: "width 0.05s linear",
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* PHASE 3: IDENTIFY */}
+        {phase === "identify" && (
+          <div
+            style={{
+              fontSize: "64px",
+              color: "#ccc", // Slightly lighter grey for clean look
+              letterSpacing: "8px",
+              marginTop: "80px",
+            }}
+          >
+            USER IDENTIFIED...
+          </div>
+        )}
+
+        {/* PHASE 4: ACCESS GRANTED (CLEAN, SOLID) */}
+        {phase === "access" && (
+          <div
+            style={{
+              fontSize: "128px",
+              fontWeight: "bold",
+              color: "white",
+              // Removed textShadow glow
+              // Removed pulse animation for stability
+              marginTop: "60px",
+              letterSpacing: "5px",
+            }}
+          >
+            ACCESS GRANTED
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* =========================================
+   3. 3D MODELS
+   ========================================= */
+
 function CyberPC({ scale = 1, ...props }) {
   return (
     <group {...props} scale={scale}>
@@ -41,7 +234,19 @@ function CyberPC({ scale = 1, ...props }) {
         <meshStandardMaterial color="#000000" roughness={0.2} metalness={0.8} />
       </mesh>
 
-      {/* 3. MONITOR STAND */}
+      {/* 3. HTML SCREEN (SCALE 0.43) */}
+      <Html
+        transform
+        occlude="blending"
+        scale={0.43}
+        position={[-0.01, 1.1, 0.053]}
+        rotation={[0, 0, 0]}
+        style={{ pointerEvents: "none" }}
+      >
+        <BootScreen />
+      </Html>
+
+      {/* 4. STAND */}
       <mesh position={[0, 0.25, -0.1]}>
         <cylinderGeometry args={[0.08, 0.15, 0.6, 32]} />
         <meshStandardMaterial color="#222" roughness={0.5} metalness={1} />
@@ -51,7 +256,7 @@ function CyberPC({ scale = 1, ...props }) {
         <meshStandardMaterial color="#111" roughness={0.5} />
       </mesh>
 
-      {/* 4. CPU TOWER */}
+      {/* 5. TOWER */}
       <group position={[2.3, 0.6, 0.2]}>
         <mesh>
           <boxGeometry args={[0.55, 1.3, 1.3]} />
@@ -74,6 +279,7 @@ function CyberPC({ scale = 1, ...props }) {
   );
 }
 
+/* --- STEAM & CLOUDS --- */
 function getCloudTexture() {
   const canvas = document.createElement("canvas");
   canvas.width = 32;
@@ -162,6 +368,7 @@ function CoffeeMug({ mugScene, position, rotation, isLampOn }) {
   );
 }
 
+/* --- MAIN SCENE --- */
 function OfficeScene() {
   const lamp = useGLTF("/lamp.glb");
   const mug = useGLTF("/mug.glb");
@@ -197,7 +404,7 @@ function OfficeScene() {
 
   return (
     <group position={[0, -0.5, 0]}>
-      {/* --- LIGHTING --- */}
+      {/* LIGHTING */}
       <ambientLight intensity={isLampOn ? 0.5 : 0.02} color="#d0e0ff" />
       <directionalLight
         position={[-5, 5, 0]}
@@ -216,7 +423,7 @@ function OfficeScene() {
         <meshStandardMaterial color="#3d2817" roughness={0.5} />
       </mesh>
 
-      {/* CUSTOM CYBER PC */}
+      {/* PC */}
       <group>
         <CyberPC position={[0, 0.05, -0.2]} scale={0.75} />
       </group>
@@ -224,7 +431,6 @@ function OfficeScene() {
       {/* LAMP */}
       <group position={[-1.5, 0.06, 0.1]}>
         <primitive object={lamp.scene} scale={1.6} />
-        {/* HITBOX */}
         <mesh
           visible={false}
           position={[0, 0.6, 0]}
@@ -256,9 +462,8 @@ function OfficeScene() {
         />
       </group>
 
-      {/* NOTE + TAPE (MOVED TO MONITOR BEZEL) */}
-      {/* Positioned on the bottom-right frame of the monitor */}
-      <group position={[0.7, 0.32, -0.14]} rotation={[0, 0, 0]}>
+      {/* NOTE */}
+      <group position={[0.7, 0.27, -0.14]} rotation={[0, 0, 0]}>
         <mesh>
           <planeGeometry args={[0.25, 0.25]} />
           <meshStandardMaterial
