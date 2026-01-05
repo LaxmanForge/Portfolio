@@ -17,14 +17,6 @@ const COFFEE_OFFSET_Z = -0.11;
 const STEAM_OFFSET_X = 0.04;
 const STEAM_OFFSET_Z = -0.09;
 
-/* =========================================
-   2. NOTE OFFSET
-   ========================================= */
-const NOTE_OFFSET_X = -0.1;
-const NOTE_OFFSET_Y = 0.6;
-const NOTE_OFFSET_Z = 0.68;
-/* ========================================= */
-
 function HDEnabler() {
   const { gl } = useThree();
   useEffect(() => {
@@ -33,7 +25,7 @@ function HDEnabler() {
   return null;
 }
 
-/* --- CYBER PC (TITAN EDITION - NO HTML) --- */
+/* --- CYBER PC (STATIC PROP) --- */
 function CyberPC({ scale = 1, ...props }) {
   return (
     <group {...props} scale={scale}>
@@ -43,7 +35,7 @@ function CyberPC({ scale = 1, ...props }) {
         <meshStandardMaterial color="#050505" roughness={0.7} metalness={0.8} />
       </mesh>
 
-      {/* 2. SCREEN SURFACE (Blank Black Glass) */}
+      {/* 2. SCREEN SURFACE */}
       <mesh position={[0, 1.1, 0.051]}>
         <planeGeometry args={[3.1, 1.4]} />
         <meshStandardMaterial color="#000000" roughness={0.2} metalness={0.8} />
@@ -170,7 +162,7 @@ function CoffeeMug({ mugScene, position, rotation, isLampOn }) {
   );
 }
 
-function OfficeScene({ isClicked, setClicked }) {
+function OfficeScene() {
   const lamp = useGLTF("/lamp.glb");
   const mug = useGLTF("/mug.glb");
   const noteTexture = useTexture("/note.png");
@@ -178,21 +170,10 @@ function OfficeScene({ isClicked, setClicked }) {
 
   const [isLampOn, setLampOn] = useState(true);
   const [hoveredLamp, setHoverLamp] = useState(false);
-  const [hoveredPC, setHoverPC] = useState(false);
 
   useEffect(() => {
-    document.body.style.cursor = hoveredLamp || hoveredPC ? "pointer" : "auto";
-  }, [hoveredLamp, hoveredPC]);
-
-  const mugGroupRef = useRef();
-
-  useFrame((state) => {
-    if (isClicked) {
-      // ZOOM: Target Y: 1.1 (Center), Z: 1.6 (Full view)
-      state.camera.position.lerp(new THREE.Vector3(0, 1.1, 1.6), 0.04);
-      state.camera.lookAt(0, 1.1, 0);
-    }
-  });
+    document.body.style.cursor = hoveredLamp ? "pointer" : "auto";
+  }, [hoveredLamp]);
 
   useMemo(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
@@ -236,14 +217,7 @@ function OfficeScene({ isClicked, setClicked }) {
       </mesh>
 
       {/* CUSTOM CYBER PC */}
-      <group
-        onPointerOver={() => setHoverPC(true)}
-        onPointerOut={() => setHoverPC(false)}
-        onClick={(e) => {
-          e.stopPropagation();
-          setClicked(!isClicked);
-        }}
-      >
+      <group>
         <CyberPC position={[0, 0.05, -0.2]} scale={0.75} />
       </group>
 
@@ -282,8 +256,9 @@ function OfficeScene({ isClicked, setClicked }) {
         />
       </group>
 
-      {/* NOTE + TAPE */}
-      <group position={[1.3, 0.35, -0.05]} rotation={[0, 1.57, 0]}>
+      {/* NOTE + TAPE (MOVED TO MONITOR BEZEL) */}
+      {/* Positioned on the bottom-right frame of the monitor */}
+      <group position={[0.7, 0.32, -0.14]} rotation={[0, 0, 0]}>
         <mesh>
           <planeGeometry args={[0.25, 0.25]} />
           <meshStandardMaterial
@@ -311,7 +286,6 @@ function OfficeScene({ isClicked, setClicked }) {
 }
 
 export default function App() {
-  const [clicked, setClicked] = useState(false);
   return (
     <div
       style={{ width: "100vw", height: "100vh", backgroundColor: "#1a1a1a" }}
@@ -326,11 +300,10 @@ export default function App() {
           far={1}
         />
         <Suspense fallback={null}>
-          <OfficeScene isClicked={clicked} setClicked={setClicked} />
+          <OfficeScene />
         </Suspense>
         <OrbitControls
           target={[0, 0, 0]}
-          enabled={!clicked}
           minAzimuthAngle={-Math.PI / 2.5}
           maxAzimuthAngle={Math.PI / 2.5}
           minPolarAngle={0.5}
