@@ -30,29 +30,33 @@ function HDEnabler() {
    2. HIGH-RES COMPONENTS
    ========================================= */
 
-/* --- PROFESSIONAL SVG LOGO (Clean, No Glow) --- */
+/* --- PROFESSIONAL SVG LOGO (Corrected "LA" - No Dots) --- */
 const LALogo = () => (
   <svg
-    width="320px"
-    height="320px"
+    width="280px"
+    height="280px"
     viewBox="0 0 100 100"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    // Removed drop-shadow filter for a clean look
   >
-    <path d="M35 30V70H70V60H45V30H35Z" fill="white" />
-    <path d="M55 70L75 30H65L55 50L45 30H35L55 70Z" fill="white" />
-    <circle cx="15" cy="15" r="2" fill="white" />
-    <circle cx="85" cy="15" r="2" fill="white" />
-    <circle cx="15" cy="85" r="2" fill="white" />
-    <circle cx="85" cy="85" r="2" fill="white" />
+    {/* The 'L' Shape */}
+    <path d="M25 25 V75 H65 V65 H35 V25 H25Z" fill="white" />
+
+    {/* The 'A' Shape (Now with Crossbar) */}
+    <path
+      d="M65 75 L80 25 H90 L105 75 H95 L91 60 H79 L75 75 H65Z"
+      fill="white"
+    />
+    {/* 'A' Crossbar Hole */}
+    <path d="M82 35 L89 55 H81 L82 35Z" fill="black" />
   </svg>
 );
 
-/* --- BOOT SCREEN (Clean, Consistent, No Glow) --- */
+/* --- BOOT SCREEN (Fixed Spacing & Stable Access) --- */
 function BootScreen() {
   const [phase, setPhase] = useState("logo");
   const [progress, setProgress] = useState(0);
+  // Removed cursor state to prevent jumping
 
   // 1. Logo Timer
   useEffect(() => {
@@ -69,7 +73,6 @@ function BootScreen() {
         setProgress((old) => {
           const increment = Math.random() * 4 + 1;
           const next = old + increment;
-
           if (next >= 100) {
             clearInterval(interval);
             setPhase("identify");
@@ -77,8 +80,7 @@ function BootScreen() {
           }
           return next;
         });
-      }, 50);
-
+      }, 40);
       return () => clearInterval(interval);
     }
   }, [phase]);
@@ -110,7 +112,6 @@ function BootScreen() {
           height: "520px", // 4x Height
           transform: "scale(0.25)",
           transformOrigin: "center center",
-
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -128,51 +129,49 @@ function BootScreen() {
           </div>
         )}
 
-        {/* PHASE 2: PROGRESS BAR (CLEAN WHITE) */}
+        {/* PHASE 2: PROGRESS BAR */}
         {phase === "loading" && (
           <div
             style={{
-              width: "80%",
+              width: "90%",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
             }}
           >
-            {/* Percentage Text */}
             <div
               style={{
                 fontSize: "40px",
                 marginBottom: "20px",
                 color: "white",
-                // Removed textShadow glow
                 width: "100%",
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "space-between", // Pushes text to edges
+                gap: "50px", // EXTRA SAFETY GAP
+                textShadow: "0 0 10px white",
               }}
             >
-              <span>LOADING MODULES</span>
+              <span>LOADING KERNEL</span>
               <span>{Math.floor(progress)}%</span>
             </div>
 
-            {/* The Bar Container */}
             <div
               style={{
                 width: "100%",
                 height: "20px",
                 background: "#111",
-                border: "2px solid #333", // Cleaner border color
+                border: "2px solid #333",
                 borderRadius: "4px",
                 position: "relative",
                 overflow: "hidden",
               }}
             >
-              {/* The Fill (CLEAN WHITE, NO GLOW) */}
               <div
                 style={{
                   width: `${progress}%`,
                   height: "100%",
                   background: "white",
-                  // Removed boxShadow glow
+                  boxShadow: "0 0 40px white",
                   transition: "width 0.05s linear",
                 }}
               />
@@ -185,29 +184,54 @@ function BootScreen() {
           <div
             style={{
               fontSize: "64px",
-              color: "#ccc", // Slightly lighter grey for clean look
+              color: "#ccc",
               letterSpacing: "8px",
-              marginTop: "80px",
+              marginTop: "40px",
             }}
           >
-            USER IDENTIFIED...
+            VERIFYING ID...
           </div>
         )}
 
-        {/* PHASE 4: ACCESS GRANTED (CLEAN, SOLID) */}
+        {/* PHASE 4: ACCESS GRANTED (Stable, No Jumping) */}
         {phase === "access" && (
           <div
             style={{
-              fontSize: "128px",
-              fontWeight: "bold",
-              color: "white",
-              // Removed textShadow glow
-              // Removed pulse animation for stability
-              marginTop: "60px",
-              letterSpacing: "5px",
+              border: "4px solid white",
+              padding: "40px 60px",
+              background: "rgba(255,255,255,0.05)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              marginTop: "20px",
+              width: "auto", // Auto width prevents layout shifts
             }}
           >
-            ACCESS GRANTED
+            <div
+              style={{
+                fontSize: "32px",
+                color: "#aaa",
+                marginBottom: "20px",
+                letterSpacing: "4px",
+                borderBottom: "2px solid #555",
+                paddingBottom: "10px",
+                width: "100%",
+              }}
+            >
+              STATUS: VERIFIED
+            </div>
+            <div
+              style={{
+                fontSize: "80px",
+                fontWeight: "bold",
+                color: "white",
+                letterSpacing: "2px",
+                textShadow: "0 0 15px white",
+                whiteSpace: "nowrap", // Prevents wrapping
+              }}
+            >
+              ACCESS GRANTED
+            </div>
           </div>
         )}
       </div>
